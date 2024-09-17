@@ -63,6 +63,16 @@ button:focus-visible {
     color: #747bff;
   }
   button {
-    background-color: #f9f9f9;
+    background-color: rgb(98 194 98);
   }
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+textarea {
+  min-height: 10em;
 }

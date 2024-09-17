@@ -3,6 +3,7 @@ import './App.css';
 
 function App() {
   const [message, setMessage] = useState('');
+  const [displayedMessage, setDisplayedMessage] = useState('');
   const LAMBDA_URL =
     'https://kppd5dp5pcum5kv55oicvhiwfy0gqmdr.lambda-url.us-east-1.on.aws/';
 
@@ -56,9 +57,7 @@ function App() {
           if (done || !value) {
             return;
           }
-
-          console.log(value, 'test');
-
+          setDisplayedMessage((prevMessage) => prevMessage + value);
           return reader.read().then(processText);
         });
       })
@@ -70,14 +69,17 @@ function App() {
   return (
     <div className="App">
       <form onSubmit={handleSubmit}>
-        <input
-          type="text"
+        <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Enter your message"
         />
         <button type="submit">Submit</button>
       </form>
+      <div>
+        <h3>Chat Response:</h3>
+        <p>{displayedMessage}</p>
+      </div>
     </div>
   );
 }

@@ -1,16 +1,31 @@
+import { OpenAI } from 'openai';
+
 export const handler = awslambda.streamifyResponse(
   async (event, responseStream) => {
     try {
-      const paragraph =
-        'This is a sample paragraph to demonstrate the process of streaming long data. ';
-      const largeText = paragraph.repeat(100);
+      responseStream.setContentType('text/plain');
 
-      const chunkSize = 1000;
+      const eventBody = JSON.parse(event.body);
 
-      for (let i = 0; i < largeText.length; i += chunkSize) {
-        responseStream.write(largeText.substring(i, i + chunkSize));
+      // Check for OpenAI API key in environment variables
+      const openaiApiKey = process.env.OPENAI_API_KEY;
+      if (!openaiApiKey) {
+        throw new Error('OpenAI API key not found in environment variables.');
+      }
 
-        await new Promise((resolve) => setTimeout(resolve, 200));
+      const openaiClient = new OpenAI({ apiKey: openaiApiKey });
+
+      const stream = await openaiClient.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [{ role: 'user', content: eventBody.message }],
+        stream: true,
+      });
+
+      for await (const chunk of stream) {
+        // Ensure the chunk has the structure you expect before accessing properties
+        if (chunk.choices && chunk.choices[0]?.delta?.content) {
+          responseStream.write(chunk.choices[0].delta.content);
+        }
       }
 
       responseStream.end();
