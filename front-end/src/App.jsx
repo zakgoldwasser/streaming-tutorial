@@ -20,7 +20,6 @@ function App() {
 
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
-        let partialText = '';
 
         return new ReadableStream({
           async start(controller) {
@@ -36,8 +35,7 @@ function App() {
                 const decodedValue = decoder.decode(value, {
                   stream: true,
                 });
-                console.log(decodedValue, 'PREVAL');
-                partialText += decodedValue;
+
                 controller.enqueue(decodedValue);
               }
             } catch (error) {
@@ -58,6 +56,8 @@ function App() {
           if (done || !value) {
             return;
           }
+
+          console.log(value, 'test');
 
           return reader.read().then(processText);
         });
