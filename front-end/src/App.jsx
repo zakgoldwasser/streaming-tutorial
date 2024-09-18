@@ -3,8 +3,7 @@ import './App.css';
 
 function App() {
   const [message, setMessage] = useState('');
-  const LAMBDA_URL =
-    'https://kppd5dp5pcum5kv55oicvhiwfy0gqmdr.lambda-url.us-east-1.on.aws/';
+  const LAMBDA_URL = '';
 
   const handleSubmit = (e) => {
     e.preventDefault();
