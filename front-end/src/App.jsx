@@ -21,43 +21,21 @@ function App() {
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
 
-        return new ReadableStream({
-          async start(controller) {
-            try {
-              while (true) {
-                const { done, value } = await reader.read();
-
-                if (done) {
-                  controller.close();
-                  break;
-                }
-
-                const decodedValue = decoder.decode(value, {
-                  stream: true,
-                });
-
-                controller.enqueue(decodedValue);
-              }
-            } catch (error) {
-              console.error('Error reading stream:', error);
-              controller.error(error);
-            }
-          },
-        });
+        return { reader, decoder };
       });
     };
 
     chatCompletion({
       message: message,
     })
-      .then((stream) => {
-        const reader = stream.getReader();
-        reader.read().then(function processText({ done, value }) {
+      .then(({ reader, decoder }) => {
+        return reader.read().then(function processText({ done, value }) {
           if (done || !value) {
             return;
           }
 
-          console.log(value, 'test');
+          const decodedValue = decoder.decode(value, { stream: true });
+          console.log(decodedValue);
 
           return reader.read().then(processText);
         });
